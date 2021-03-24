@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const express = require("express");
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
 
 const app = express();
 app.use(bodyParser.urlencoded({
@@ -20,6 +21,9 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String
 });
+
+const secret = "thisisoursecret";
+userSchema.plugin(encrypt, {secret:secret, encryptedFields: ["password"] });
 
 const User = mongoose.model("User", userSchema);
 
