@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 
 const app = express();
@@ -34,7 +34,7 @@ mongoose.set("useCreateIndex", true);
 const userSchema = new mongoose.Schema({
   email: String,
   password: String,
-  googleId: String
+  facebookId: String
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -55,15 +55,13 @@ passport.deserializeUser(function(id, done) {
 });
 
 
-passport.use(new GoogleStrategy({
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets",
-    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+passport.use(new FacebookStrategy({
+    clientID: process.env.APP_ID,
+    clientSecret: process.env.APP_SECRET,
+    callbackURL: "http://localhost:3000/auth/facebook/secrets"
   },
   function(accessToken, refreshToken, profile, cb) {
-    console.log(profile);
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
       return cb(err, user);
     });
   }
@@ -73,14 +71,14 @@ app.get("/", function(req, res) {
   res.render("home");
 });
 
-app.get("/auth/google",
-  passport.authenticate('google', { scope: ['profile'] }));
+app.get("/auth/facebook",
+  passport.authenticate('facebook'));
 
-app.get("/auth/google/secrets",
-  passport.authenticate('google', { failureRedirect: '/login' }),
+app.get("/auth/facebook/secrets",
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
     function(req, res) {
       // Successful authentication, redirect secrets.
-      res.redirect("/secrets");
+      res.redirect('/secrets');
     });
 
 app.get("/register", function(req, res) {
