@@ -1,5 +1,5 @@
 # Secrets-Auth-Security
-A webiste named "Secret" where user can login and submit/post/view secret(text).
+A website named "Secret" where user can login and submit/post/view secret(text).
 The login authentication is changed from level1 to level6 to make hacking the website harder with new methods as follows:
 
 Different levels of security and authentication scenario:
